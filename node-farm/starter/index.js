@@ -1,5 +1,6 @@
 const fs = require("fs")
 const http = require("http")
+const url = require("url")
 
 //////////////////////////////////
 // FILES
@@ -29,7 +30,24 @@ const http = require("http")
 // SERVER
 
 const server = http.createServer((req, res) => {
-    res.end('Hello from the server!')
+    const pathName = req.url
+
+    if (pathName === '/' || pathName === '/overview') {
+        res.writeHead(200, {
+            'Content-type': 'text/html'
+        })
+        res.end('this it the overview')
+    } else if (pathName === '/product') {
+        res.writeHead(200, {
+            'Content-type': 'text/html'
+        })
+        res.end('this it the product')
+    } else {
+        res.writeHead(404, {
+            'Content-type': 'text/html'
+        })
+        res.end('<h1>Page not found 404</h1>')
+    }
 })
 
 server.listen(8000, '127.0.0.1', () => {
