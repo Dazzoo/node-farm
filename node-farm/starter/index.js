@@ -29,6 +29,8 @@ const url = require("url")
 //////////////////////////////////
 // SERVER
 
+let devDataJSON = fs.readFileSync(`${__dirname}/dev-data/data.json`, { encoding : 'utf8' })
+
 const server = http.createServer((req, res) => {
     const pathName = req.url
 
@@ -42,6 +44,12 @@ const server = http.createServer((req, res) => {
             'Content-type': 'text/html'
         })
         res.end('this it the product')
+    } else if (pathName === '/api') {
+        res.writeHead(200, {
+            'Content-type': 'application/json'
+        })
+        res.end(devDataJSON)                 
+        
     } else {
         res.writeHead(404, {
             'Content-type': 'text/html'
