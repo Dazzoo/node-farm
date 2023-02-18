@@ -30,6 +30,28 @@ const url = require("url")
 // SERVER
 
 let devDataJSON = fs.readFileSync(`${__dirname}/dev-data/data.json`, { encoding : 'utf8' })
+let devDataObject = JSON.parse(devDataJSON)
+let overviewHTML = fs.readFileSync(`${__dirname}/templates/overview.html`, { encoding : 'utf8' })
+let product_cardHTML = fs.readFileSync(`${__dirname}/templates/product_card.html`, { encoding : 'utf8' })
+
+const FillOverviewWithData = (html_wrapper, html_product, data) => {
+    let output = html_wrapper
+    let products = data.map(el => {
+        console.log('start')
+        product = html_product.replace(/{%PRODUCT_NAME%}/g, el.productName)
+        product = product.replace(/{%IMAGE%}/g, el.image)
+        product = product.replace(/{%QUANTITY%}/g, el.quantity)
+        product = product.replace(/{%PRICE%}/g, el.price)
+        console.log(product)
+        console.log('end')
+        return product
+    })
+
+    output = output.replace(/{%PRODUCT_CARDS%}/g, products)
+    return output
+
+}
+
 
 const server = http.createServer((req, res) => {
     const pathName = req.url
@@ -38,7 +60,8 @@ const server = http.createServer((req, res) => {
         res.writeHead(200, {
             'Content-type': 'text/html'
         })
-        res.end('this it the overview')
+        let output = FillOverviewWithData(overviewHTML, product_cardHTML, devDataObject) 
+        res.end(output)
     } else if (pathName === '/product') {
         res.writeHead(200, {
             'Content-type': 'text/html'
