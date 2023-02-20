@@ -34,40 +34,35 @@ let devDataObject = JSON.parse(devDataJSON)
 let overviewHTML = fs.readFileSync(`${__dirname}/templates/overview.html`, { encoding : 'utf8' })
 let product_cardHTML = fs.readFileSync(`${__dirname}/templates/product_card.html`, { encoding : 'utf8' })
 
-const FillOverviewWithData = (html_wrapper, html_product, data) => {
-    let output = html_wrapper
-    let products = data.map(el => {
-        console.log('start')
-        product = html_product.replace(/{%PRODUCT_NAME%}/g, el.productName)
-        product = product.replace(/{%IMAGE%}/g, el.image)
-        product = product.replace(/{%QUANTITY%}/g, el.quantity)
-        product = product.replace(/{%PRICE%}/g, el.price)
-        console.log(product)
-        console.log('end')
-        return product
-    })
-
-    output = output.replace(/{%PRODUCT_CARDS%}/g, products)
-    return output
-
+const FillTemplateWithData = (html_template, data) => {
+    let output = html_template
+        output = output.replace(/{%PRODUCT_NAME%}/g, data.productName)
+        output = output.replace(/{%IMAGE%}/g, data.image)
+        output = output.replace(/{%QUANTITY%}/g, data.quantity)
+        output = output.replace(/{%PRICE%}/g, data.price)
+        output = output.replace(/{%PRODUCT_CARDS%}/g, data)
+        return output
 }
 
 
 const server = http.createServer((req, res) => {
-    const pathName = req.url
+    const { query, pathname } = url.parse(req.url, true)
+    console.log(query.id)
 
-    if (pathName === '/' || pathName === '/overview') {
+    if (pathname === '/' || pathname === '/overview') {
         res.writeHead(200, {
             'Content-type': 'text/html'
         })
-        let output = FillOverviewWithData(overviewHTML, product_cardHTML, devDataObject) 
+        let replcedProducts = devDataObject.map(product => FillTemplateWithData(product_cardHTML, product))
+        let output = FillTemplateWithData(overviewHTML, replcedProducts)
         res.end(output)
-    } else if (pathName === '/product') {
+    } else if (pathname === '/product') {
         res.writeHead(200, {
             'Content-type': 'text/html'
         })
+
         res.end('this it the product')
-    } else if (pathName === '/api') {
+    } else if (pathname === '/api') {
         res.writeHead(200, {
             'Content-type': 'application/json'
         })
