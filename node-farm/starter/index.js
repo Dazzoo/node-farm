@@ -33,6 +33,7 @@ let devDataJSON = fs.readFileSync(`${__dirname}/dev-data/data.json`, { encoding 
 let devDataObject = JSON.parse(devDataJSON)
 let overviewHTML = fs.readFileSync(`${__dirname}/templates/overview.html`, { encoding : 'utf8' })
 let product_cardHTML = fs.readFileSync(`${__dirname}/templates/product_card.html`, { encoding : 'utf8' })
+let productHTML = fs.readFileSync(`${__dirname}/templates/product.html`, { encoding : 'utf8' })
 
 const FillTemplateWithData = (html_template, data) => {
     let output = html_template
@@ -40,7 +41,13 @@ const FillTemplateWithData = (html_template, data) => {
         output = output.replace(/{%IMAGE%}/g, data.image)
         output = output.replace(/{%QUANTITY%}/g, data.quantity)
         output = output.replace(/{%PRICE%}/g, data.price)
-        output = output.replace(/{%PRODUCT_CARDS%}/g, data)
+        output = output.replace(/{%FROM%}/g, data.from)
+        output = output.replace(/{%NUTRIENTS%}/g, data.nutrients)
+        output = output.replace(/{%ID%}/g, data.id)
+
+        if (!data.organic) {
+            output = output.replace(/{%NOT_ORGANIC%}/g, 'not-organic')
+        }
         return output
 }
 
@@ -53,15 +60,21 @@ const server = http.createServer((req, res) => {
         res.writeHead(200, {
             'Content-type': 'text/html'
         })
-        let replcedProducts = devDataObject.map(product => FillTemplateWithData(product_cardHTML, product))
-        let output = FillTemplateWithData(overviewHTML, replcedProducts)
+        let products = devDataObject.map(product => FillTemplateWithData(product_cardHTML, product))
+        let output = overviewHTML
+        output = output.replace(/{%PRODUCT_CARDS%}/g, products)
+        console.log(products)
         res.end(output)
     } else if (pathname === '/product') {
-        res.writeHead(200, {
-            'Content-type': 'text/html'
-        })
-
-        res.end('this it the product')
+        
+        let product_id_date = devDataObject[query.id]
+        if (product_id_date) {
+            res.writeHead(200, {
+                'Content-type': 'text/html'
+            })
+            let product = FillTemplateWithData(productHTML, product_id_date)
+            res.end(product)
+        }
     } else if (pathname === '/api') {
         res.writeHead(200, {
             'Content-type': 'application/json'
