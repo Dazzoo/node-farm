@@ -1,6 +1,7 @@
 const fs = require("fs")
 const http = require("http")
 const url = require("url")
+const replaceTemplateWithData = require("./modules/replaceTemplateWithData")
 
 //////////////////////////////////
 // FILES
@@ -35,22 +36,6 @@ let overviewHTML = fs.readFileSync(`${__dirname}/templates/overview.html`, { enc
 let product_cardHTML = fs.readFileSync(`${__dirname}/templates/product_card.html`, { encoding : 'utf8' })
 let productHTML = fs.readFileSync(`${__dirname}/templates/product.html`, { encoding : 'utf8' })
 
-const FillTemplateWithData = (html_template, data) => {
-    let output = html_template
-        output = output.replace(/{%PRODUCT_NAME%}/g, data.productName)
-        output = output.replace(/{%IMAGE%}/g, data.image)
-        output = output.replace(/{%QUANTITY%}/g, data.quantity)
-        output = output.replace(/{%PRICE%}/g, data.price)
-        output = output.replace(/{%FROM%}/g, data.from)
-        output = output.replace(/{%NUTRIENTS%}/g, data.nutrients)
-        output = output.replace(/{%ID%}/g, data.id)
-
-        if (!data.organic) {
-            output = output.replace(/{%NOT_ORGANIC%}/g, 'not-organic')
-        }
-        return output
-}
-
 
 const server = http.createServer((req, res) => {
     const { query, pathname } = url.parse(req.url, true)
@@ -60,10 +45,9 @@ const server = http.createServer((req, res) => {
         res.writeHead(200, {
             'Content-type': 'text/html'
         })
-        let products = devDataObject.map(product => FillTemplateWithData(product_cardHTML, product))
+        let products = devDataObject.map(product => replaceTemplateWithData(product_cardHTML, product))
         let output = overviewHTML
         output = output.replace(/{%PRODUCT_CARDS%}/g, products)
-        console.log(products)
         res.end(output)
     } else if (pathname === '/product') {
         
@@ -72,7 +56,7 @@ const server = http.createServer((req, res) => {
             res.writeHead(200, {
                 'Content-type': 'text/html'
             })
-            let product = FillTemplateWithData(productHTML, product_id_date)
+            let product = replaceTemplateWithData(productHTML, product_id_date)
             res.end(product)
         }
     } else if (pathname === '/api') {
