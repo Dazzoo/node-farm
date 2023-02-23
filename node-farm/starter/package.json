@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon index.js"
   },
   "repository": {
     "type": "git",
@@ -15,5 +15,12 @@
   "bugs": {
     "url": "https://github.com/Dazzoo/node/issues"
   },
-  "homepage": "https://github.com/Dazzoo/node#readme"
+  "homepage": "https://github.com/Dazzoo/node#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  },
+  "dependencies": {
+    "slugify": "^1.6.5",
+    "unslugify": "^1.0.3"
+  }
 }

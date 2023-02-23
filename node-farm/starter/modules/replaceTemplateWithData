@@ -1,4 +1,6 @@
 module.exports = (html_template, data) => {
+    const slugify = require("slugify")
+
     let output = html_template
         output = output.replace(/{%PRODUCT_NAME%}/g, data.productName)
         output = output.replace(/{%IMAGE%}/g, data.image)
@@ -6,7 +8,7 @@ module.exports = (html_template, data) => {
         output = output.replace(/{%PRICE%}/g, data.price)
         output = output.replace(/{%FROM%}/g, data.from)
         output = output.replace(/{%NUTRIENTS%}/g, data.nutrients)
-        output = output.replace(/{%ID%}/g, data.id)
+        output = output.replace(/{%ID%}/g, slugify(data.productName, {lower: true}))
 
         if (!data.organic) {
             output = output.replace(/{%NOT_ORGANIC%}/g, 'not-organic')

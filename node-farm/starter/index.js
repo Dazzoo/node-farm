@@ -2,7 +2,7 @@ const fs = require("fs")
 const http = require("http")
 const url = require("url")
 const replaceTemplateWithData = require("./modules/replaceTemplateWithData")
-
+const slugify = require("slugify")
 //////////////////////////////////
 // FILES
 
@@ -36,7 +36,6 @@ let overviewHTML = fs.readFileSync(`${__dirname}/templates/overview.html`, { enc
 let product_cardHTML = fs.readFileSync(`${__dirname}/templates/product_card.html`, { encoding : 'utf8' })
 let productHTML = fs.readFileSync(`${__dirname}/templates/product.html`, { encoding : 'utf8' })
 
-
 const server = http.createServer((req, res) => {
     const { query, pathname } = url.parse(req.url, true)
     console.log(query.id)
@@ -50,13 +49,12 @@ const server = http.createServer((req, res) => {
         output = output.replace(/{%PRODUCT_CARDS%}/g, products)
         res.end(output)
     } else if (pathname === '/product') {
-        
-        let product_id_date = devDataObject[query.id]
-        if (product_id_date) {
+        let product_id_data = devDataObject.find(el => slugify(el.productName, {lower: true}) === query.id)
+        if (product_id_data) {
             res.writeHead(200, {
                 'Content-type': 'text/html'
             })
-            let product = replaceTemplateWithData(productHTML, product_id_date)
+            let product = replaceTemplateWithData(productHTML, product_id_data)
             res.end(product)
         }
     } else if (pathname === '/api') {
