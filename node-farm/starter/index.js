@@ -1,8 +1,8 @@
-const fs = require("fs")
-const http = require("http")
-const url = require("url")
-const replaceTemplateWithData = require("./modules/replaceTemplateWithData")
-const slugify = require("slugify")
+const fs = require('fs')
+const http = require('http')
+const url = require('url')
+const replaceTemplateWithData = require('./modules/replaceTemplateWithData')
+const slugify = require('slugify')
 //////////////////////////////////
 // FILES
 
@@ -12,7 +12,7 @@ const slugify = require("slugify")
 // const textOut = `This is what we know about the avocado: ${textIn}. \nCreated on ${new Date().now}`
 // fs.writeFileSync('./txt/output.txt', textOut)
 // console.log('File written')
- 
+
 // Non-blocking async
 // fs.readFile('./txt/start.txt', { encoding : 'utf8' }, (err, data1) => {
 //     if (err) { return console.log('ERROR') }
@@ -29,48 +29,61 @@ const slugify = require("slugify")
 
 //////////////////////////////////
 // SERVER
+//
 
-let devDataJSON = fs.readFileSync(`${__dirname}/dev-data/data.json`, { encoding : 'utf8' })
+let devDataJSON = fs.readFileSync(`${__dirname}/dev-data/data.json`, {
+  encoding: 'utf8',
+})
 let devDataObject = JSON.parse(devDataJSON)
-let overviewHTML = fs.readFileSync(`${__dirname}/templates/overview.html`, { encoding : 'utf8' })
-let product_cardHTML = fs.readFileSync(`${__dirname}/templates/product_card.html`, { encoding : 'utf8' })
-let productHTML = fs.readFileSync(`${__dirname}/templates/product.html`, { encoding : 'utf8' })
+let overviewHTML = fs.readFileSync(`${__dirname}/templates/overview.html`, {
+  encoding: 'utf8',
+})
+let product_cardHTML = fs.readFileSync(
+  `${__dirname}/templates/product_card.html`,
+  { encoding: 'utf8' }
+)
+let productHTML = fs.readFileSync(`${__dirname}/templates/product.html`, {
+  encoding: 'utf8',
+})
 
 const server = http.createServer((req, res) => {
-    const { query, pathname } = url.parse(req.url, true)
-    console.log(query.id)
+  const { query, pathname } = url.parse(req.url, true)
+  console.log(query.id)
 
-    if (pathname === '/' || pathname === '/overview') {
-        res.writeHead(200, {
-            'Content-type': 'text/html'
-        })
-        let products = devDataObject.map(product => replaceTemplateWithData(product_cardHTML, product))
-        let output = overviewHTML
-        output = output.replace(/{%PRODUCT_CARDS%}/g, products)
-        res.end(output)
-    } else if (pathname === '/product') {
-        let product_id_data = devDataObject.find(el => slugify(el.productName, {lower: true}) === query.id)
-        if (product_id_data) {
-            res.writeHead(200, {
-                'Content-type': 'text/html'
-            })
-            let product = replaceTemplateWithData(productHTML, product_id_data)
-            res.end(product)
-        }
-    } else if (pathname === '/api') {
-        res.writeHead(200, {
-            'Content-type': 'application/json'
-        })
-        res.end(devDataJSON)                 
-        
-    } else {
-        res.writeHead(404, {
-            'Content-type': 'text/html'
-        })
-        res.end('<h1>Page not found 404</h1>')
+  if (pathname === '/' || pathname === '/overview') {
+    res.writeHead(200, {
+      'Content-type': 'text/html',
+    })
+    let products = devDataObject.map((product) =>
+      replaceTemplateWithData(product_cardHTML, product)
+    )
+    let output = overviewHTML
+    output = output.replace(/{%PRODUCT_CARDS%}/g, products)
+    res.end(output)
+  } else if (pathname === '/product') {
+    let product_id_data = devDataObject.find(
+      (el) => slugify(el.productName, { lower: true }) === query.id
+    )
+    if (product_id_data) {
+      res.writeHead(200, {
+        'Content-type': 'text/html',
+      })
+      let product = replaceTemplateWithData(productHTML, product_id_data)
+      res.end(product)
     }
+  } else if (pathname === '/api') {
+    res.writeHead(200, {
+      'Content-type': 'application/json',
+    })
+    res.end(devDataJSON)
+  } else {
+    res.writeHead(404, {
+      'Content-type': 'text/html',
+    })
+    res.end('<h1>Page not found 404</h1>')
+  }
 })
 
 server.listen(8000, '127.0.0.1', () => {
-    console.log('Listening to requests on port 8000')
+  console.log('Listening to requests on port 8000')
 })
