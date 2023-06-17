@@ -65,6 +65,7 @@
       .container {
         width: 95rem;
         margin: 0 auto;
+        max-width: 100%;
       }
 
       .cards-container {
@@ -183,6 +184,34 @@
 
       .not-organic {
         display: none;
+      }
+      @media only screen and (max-width: 850px) {
+        html {
+        font-size: 37.5%;
+        overflow-x: hidden;
+        }
+        .card{
+          min-width: 90vw;
+        }
+        .card__title-box{
+          min-width: 40vw;
+          max-width: 40vw;
+        }
+        .card__detail--organic{
+          display: none;
+        }
+        .card_datail--quantity{
+          display: none!important;
+        }
+        .card__detail-box{
+          border: none!important;
+        }
+        .card__detail--price{
+          display: flex;
+        }
+        h1{
+          width: 90vw;
+        }
       }
     </style>
   </head>

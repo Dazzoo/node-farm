@@ -1,8 +1,8 @@
-const fs = require('fs')
-const http = require('http')
-const url = require('url')
-const replaceTemplateWithData = require('./modules/replaceTemplateWithData')
-const slugify = require('slugify')
+const fs = require("fs");
+const http = require("http");
+const url = require("url");
+const replaceTemplateWithData = require("./modules/replaceTemplateWithData");
+const slugify = require("slugify");
 //////////////////////////////////
 // FILES
 
@@ -32,58 +32,59 @@ const slugify = require('slugify')
 //
 
 let devDataJSON = fs.readFileSync(`${__dirname}/dev-data/data.json`, {
-  encoding: 'utf8',
-})
-let devDataObject = JSON.parse(devDataJSON)
+  encoding: "utf8",
+});
+let devDataObject = JSON.parse(devDataJSON);
 let overviewHTML = fs.readFileSync(`${__dirname}/templates/overview.html`, {
-  encoding: 'utf8',
-})
+  encoding: "utf8",
+});
 let product_cardHTML = fs.readFileSync(
   `${__dirname}/templates/product_card.html`,
-  { encoding: 'utf8' }
-)
+  { encoding: "utf8" }
+);
 let productHTML = fs.readFileSync(`${__dirname}/templates/product.html`, {
-  encoding: 'utf8',
-})
+  encoding: "utf8",
+});
 
 const server = http.createServer((req, res) => {
-  const { query, pathname } = url.parse(req.url, true)
-  console.log(query.id)
-
-  if (pathname === '/' || pathname === '/overview') {
+  const { query, pathname } = url.parse(req.url, true);
+  if (pathname === "/" || pathname === "/overview") {
     res.writeHead(200, {
-      'Content-type': 'text/html',
-    })
+      "Content-type": "text/html",
+    });
     let products = devDataObject.map((product) =>
       replaceTemplateWithData(product_cardHTML, product)
-    )
-    let output = overviewHTML
-    output = output.replace(/{%PRODUCT_CARDS%}/g, products)
-    res.end(output)
-  } else if (pathname === '/product') {
+    );
+    let output = overviewHTML;
+    output = output.replace(/{%PRODUCT_CARDS%}/g, products);
+    res.end(output);
+  } else if (pathname.includes("/product")) {
+    const paths = pathname.split("/");
+    console.log(paths[paths.length - 1]);
     let product_id_data = devDataObject.find(
-      (el) => slugify(el.productName, { lower: true }) === query.id
-    )
+      (el) =>
+        slugify(el.productName, { lower: true }) === paths[paths.length - 1]
+    );
     if (product_id_data) {
       res.writeHead(200, {
-        'Content-type': 'text/html',
-      })
-      let product = replaceTemplateWithData(productHTML, product_id_data)
-      res.end(product)
+        "Content-type": "text/html",
+      });
+      let product = replaceTemplateWithData(productHTML, product_id_data);
+      res.end(product);
     }
-  } else if (pathname === '/api') {
+  } else if (pathname === "/api") {
     res.writeHead(200, {
-      'Content-type': 'application/json',
-    })
-    res.end(devDataJSON)
+      "Content-type": "application/json",
+    });
+    res.end(devDataJSON);
   } else {
     res.writeHead(404, {
-      'Content-type': 'text/html',
-    })
-    res.end('<h1>Page not found 404</h1>')
+      "Content-type": "text/html",
+    });
+    res.end("<h1>Page not found 404</h1>");
   }
-})
+});
 
-server.listen(8000, '127.0.0.1', () => {
-  console.log('Listening to requests on port 8000')
-})
+server.listen(8000, `0.0.0.0`, () => {
+  console.log("Listening to requests on port 8000");
+});
