@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "nodemon index.js",
+    "ff": "npx functions-framework --target=index"
   },
   "repository": {
     "type": "git",
@@ -20,6 +21,7 @@
     "nodemon": "^2.0.20"
   },
   "dependencies": {
+    "@google-cloud/functions-framework": "^3.2.0",
     "slugify": "^1.6.5",
     "unslugify": "^1.0.3"
   }
