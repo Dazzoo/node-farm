@@ -212,7 +212,11 @@
         h1{
           width: 90vw;
         }
+        .card__emoji{
+          margin: auto;
+        }
       }
+      
     </style>
   </head>
 
@@ -222,5 +226,13 @@
 
       <div class="cards-container">{%PRODUCT_CARDS%}</div>
     </div>
+    <script>
+      if (window.devicePixelRatio !== 1) { // Костыль для определения иных устройств, с коэффициентом отличным от 1		
+        var dpt = window.devicePixelRatio;
+        var widthM = window.screen.width * dpt;
+        var widthH = window.screen.height * dpt;
+        document.write('<meta name="viewport" content="width=' + widthM+ ', height=' + widthH + '">');
+      }
+    </script>
   </body>
 </html>
